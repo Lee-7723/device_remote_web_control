@@ -1,16 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script src="https://cdn.staticfile.org/vue/3.2.36/vue.global.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
 <title>N6700C powersupply</title>
 </head>
 <body>
+  <form action="/power/" method="POST" target="_parent">
+    <div><p>Number of Cycles: </p><input type="text" name="cycle" placeholder="0" required><p></p></div>
+    <div><p>Voltage: </p><input type="text" name="voltage" placeholder="0" required><p>V</p></div>
+    <div><p>On duration: </p><input type="text" name="uptime" placeholder="0" required><p>s</p></div>
+    <div><p>Off duration: </p><input type="text" name="downtime" placeholder="0" required><p>s</p></div>
+    <input type="submit" value="confirm" style="
+    left: 35%;
+    position: relative;
+    width: 30%;
+    margin: 1rem 0 0.5rem 0;
+    height: 2rem;
+    ">
+  </form>
 
-<form action="/power/" method="POST" target="_parent">
-  <input type="radio" name="status" value="on"> ON<br>
-  <input type="radio" name="status" value="off"> OFF<br>
-  <input type="submit" value="confirm">
-</form>
+  <!-- <form action="/power/" method="POST" target="_parent">
+    <input type="radio" name="status" value="on"> ON<br>
+    <input type="radio" name="status" value="off"> OFF<br>
+    <input type="submit" value="confirm">
+  </form> -->
+
+  <!-- <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p style="float: left" v-html="status"></p></div> -->
+  <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p style="float: left">{{state}}</p></div>
+
+  <script>
+    function sleep(time){
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    const checkstatus = {
+      data(){
+        if(location.href.split('?')[1]=='noerror'){
+          return{
+            status: "<span style='color: green'>SUCCESS</span>"
+          }
+        }
+        else{
+          return{
+            status: "<span style='color: red'>ERROR</span>"
+          }
+        }
+      }
+
+      }
+    //Vue.createApp(checkstatus).mount('#powerstatus')
+    function main(){
+        $.ajax({
+          type: 'GET',
+          dataType: 'json',
+          data: null,
+          url: '/power/status/',
+          success: function(data, status, request){
+              //console.log(request.responseJSON)
+              console.log(data.state);
+              state = {
+                data(){
+                  return{
+                    state: data.state
+                  }
+                }
+              }
+              Vue.createApp(state).mount('#powerstatus')
+          },
+          error: function(){
+              alert('error')
+          }
+        })
+      }
+    main()
+      
+        
+
+  </script>
 
 </body>
 </html>

@@ -1,0 +1,35 @@
+form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    width: fit-content;
+    border-style: solid;
+    border-color: burlywood;
+}
+
+form div {
+    display: flex;
+    height: 1.2rem;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem 0 0 0;
+}
+
+form div p:first-of-type{
+    width: 150px;
+}
+form div p:nth-of-type(2){
+    width: 10px;
+}
+
+input{
+    border-radius: 0.5rem;
+    margin: 1rem;
+}
+
+input[type="text"]{
+    padding: 0 0.5rem 0 0.5rem;
+    width: 20%;
+}

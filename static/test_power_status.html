@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+    <script>
+        $.ajax({
+            type: 'GET',
+            dataType: 'json',
+            data: null,
+            url: '/power/status/',
+            success: function(data, status, request){
+                //console.log(request.responseJSON)
+                console.log(data)
+                alert(data.state)
+            },
+            error: function(){
+                alert('error')
+            }
+        })
+    </script>
+</head>
+
+<body>
+
+</body>
+</html>
