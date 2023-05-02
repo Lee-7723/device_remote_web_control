@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" type="text/css" href="css/style.css">
+<link rel="stylesheet" type="text/css" href="../static/css/style.css">
 <script src="https://cdn.staticfile.org/vue/3.2.36/vue.global.min.js"></script>
 <script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
 <title>N6700C powersupply</title>
@@ -29,31 +29,21 @@
   </form> -->
 
   <!-- <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p style="float: left" v-html="status"></p></div> -->
-  <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p id="power" style="float: left">{{state}}</p></div>
+  <div id="powerstatus"><p>Status: <span id="power">{{state}}</span></p></div>
+  <div id="taskstatus">
+    <p>Task ID: <span id="task_id">{{task.task_id}}</span></p>
+  </div>
+  {% if task.task_id != 'no task running'%}
+  <p>Progress: <span id="progress"></span></p>
+  {% endif %}
 
   <script>
     function sleep(time){
       return new Promise((resolve) => setTimeout(resolve, time));
     }
 
-    const checkstatus = {
-      data(){
-        if(location.href.split('?')[1]=='noerror'){
-          return{
-            status: "<span style='color: green'>SUCCESS</span>"
-          }
-        }
-        else{
-          return{
-            status: "<span style='color: red'>ERROR</span>"
-          }
-        }
-      }
-
-      }
-    //Vue.createApp(checkstatus).mount('#powerstatus')
     async function main(){
-      while(true){
+      while($('#task_id')!='no task running'){
         $.ajax({
           type: 'GET',
           dataType: 'json',
@@ -68,7 +58,19 @@
               alert('error')
           }
         })
-        await sleep(10000)
+
+        $.ajax({
+          type: 'GET',
+          dataType: 'json',
+          url: '/task_status/'+ $('#task_id')[0].innerHTML,
+          success: function(data, status, request){
+            if(data.state == 'PROGRESS')
+              $('#progress')[0].innerHTML = data.cycle+'/'+data.total
+            else
+              $('#progress')[0].innerHTML = data.state
+        },
+        })
+        await sleep(1000)
         //console.log('refreshing')
       }
     }
