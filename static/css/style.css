@@ -28,8 +28,12 @@ input{
     border-radius: 0.5rem;
     margin: 1rem;
 }
+button{
+    border-radius: 0.5rem;
+    margin: 1rem;
+}
 
-input[type="text"]{
+input[type="text"], button{
     padding: 0 0.5rem 0 0.5rem;
     width: 20%;
 }

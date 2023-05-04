@@ -86,8 +86,19 @@ def queryTaskstatus(task_id):
         response = {
             'state': status.state
         }
-    status.revoke()
+    running_tasks = celery.control.inspect().active()['celery@CAGR4NXRAO']
+    if len(running_tasks)!=0:
+        print(running_tasks[0]['name'])
+        response['current_task'] = running_tasks[0]['name']
+    else:
+        print('no task running')
+        response['current_task'] = 'no task'
     return jsonify(response)
+
+@app.route('/kill_task/<task_id>')
+def killTask(task_id):
+    task = AsyncResult(id=task_id, app=celery)
+    task.revoke(terminate=True)
 
 
 

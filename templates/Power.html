@@ -13,7 +13,7 @@
     <div><p>Voltage: </p><input type="text" name="voltage" placeholder="0" required><p>V</p></div>
     <div><p>On duration: </p><input type="text" name="uptime" placeholder="0" required><p>s</p></div>
     <div><p>Off duration: </p><input type="text" name="downtime" placeholder="0" required><p>s</p></div>
-    <input type="submit" value="confirm" style="
+    <input id="confirm_button" type="submit" value="confirm"  style="
     left: 35%;
     position: relative;
     width: 30%;
@@ -32,15 +32,33 @@
   <div id="powerstatus"><p>Status: <span id="power">{{state}}</span></p></div>
   <div id="taskstatus">
     <p>Task ID: <span id="task_id">{{task.task_id}}</span></p>
+    <p>Current task: <span id="current_task"></span></p>
   </div>
-  {% if task.task_id != 'no task running'%}
-  <p>Progress: <span id="progress"></span></p>
-  {% endif %}
+  <div id="status_detail" style="display: none">
+    <p>Progress: <span id="progress"></span></p>
+  </div>
+  
 
   <script>
     function sleep(time){
       return new Promise((resolve) => setTimeout(resolve, time));
     }
+
+    if($('#task_id')[0].innerHTML != 'no task running'){
+      $('#confirm_button').replaceWith(`<button id="confirm_button" onclick="kill_task()" style="
+      left: 35%;
+      position: relative;
+      width: 30%;
+      margin: 1rem 0 0.5rem 0;
+      height: 2rem;
+      ">stop running</button>`
+      )
+    }
+
+    function kill_task(){
+      $.get('/kill_task/'+$('#task_id')[0].innerHTML)
+    }
+
 
     async function main(){
       while($('#task_id')!='no task running'){
@@ -55,7 +73,7 @@
               $('#power')[0].innerHTML = data.state
           },
           error: function(){
-              alert('error')
+              alert('ajax cannot get task status')
           }
         })
 
@@ -64,11 +82,28 @@
           dataType: 'json',
           url: '/task_status/'+ $('#task_id')[0].innerHTML,
           success: function(data, status, request){
-            if(data.state == 'PROGRESS')
-              $('#progress')[0].innerHTML = data.cycle+'/'+data.total
-            else
-              $('#progress')[0].innerHTML = data.state
-        },
+            var progress = $('#progress')[0]
+            var current_task = $('#current_task')[0]
+            current_task.innerHTML = data.current_task
+            if(data.state == 'PROGRESS'){
+              progress.innerHTML = data.cycle+'/'+data.total
+            }
+            //else if(data.state == 'REVOKED')
+              
+            else {
+              $('#confirm_button').replaceWith(`<input id="confirm_button" type="submit" value="confirm"  style="
+              left: 35%;
+              position: relative;
+              width: 30%;
+              margin: 1rem 0 0.5rem 0;
+              height: 2rem;
+              ">`)
+              progress.innerHTML = data.state
+            }
+              
+            if (data.state != 'PENDING')
+              $('#status_detail')[0].style = 'display: block'
+          },
         })
         await sleep(1000)
         //console.log('refreshing')
