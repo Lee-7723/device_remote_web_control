@@ -29,7 +29,7 @@
   </form> -->
 
   <!-- <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p style="float: left" v-html="status"></p></div> -->
-  <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p style="float: left">{{state}}</p></div>
+  <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p id="power" style="float: left">{{state}}</p></div>
 
   <script>
     function sleep(time){
@@ -52,7 +52,8 @@
 
       }
     //Vue.createApp(checkstatus).mount('#powerstatus')
-    function main(){
+    async function main(){
+      while(true){
         $.ajax({
           type: 'GET',
           dataType: 'json',
@@ -60,21 +61,17 @@
           url: '/power/status/',
           success: function(data, status, request){
               //console.log(request.responseJSON)
-              console.log(data.state);
-              state = {
-                data(){
-                  return{
-                    state: data.state
-                  }
-                }
-              }
-              Vue.createApp(state).mount('#powerstatus')
+              //console.log(data.state);
+              $('#power')[0].innerHTML = data.state
           },
           error: function(){
               alert('error')
           }
         })
+        await sleep(10000)
+        //console.log('refreshing')
       }
+    }
     main()
       
         

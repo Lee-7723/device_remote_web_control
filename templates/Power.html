@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="../static/css/style.css">
+<script src="https://cdn.staticfile.org/vue/3.2.36/vue.global.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+<title>N6700C powersupply</title>
+</head>
+<body>
+  <form action="/power/" method="POST" target="_parent">
+    <div><p>Number of Cycles: </p><input type="text" name="cycle" placeholder="0" required><p></p></div>
+    <div><p>Voltage: </p><input type="text" name="voltage" placeholder="0" required><p>V</p></div>
+    <div><p>On duration: </p><input type="text" name="uptime" placeholder="0" required><p>s</p></div>
+    <div><p>Off duration: </p><input type="text" name="downtime" placeholder="0" required><p>s</p></div>
+    <input id="confirm_button" type="submit" value="confirm"  style="
+    left: 35%;
+    position: relative;
+    width: 30%;
+    margin: 1rem 0 0.5rem 0;
+    height: 2rem;
+    ">
+  </form>
+
+  <!-- <form action="/power/" method="POST" target="_parent">
+    <input type="radio" name="status" value="on"> ON<br>
+    <input type="radio" name="status" value="off"> OFF<br>
+    <input type="submit" value="confirm">
+  </form> -->
+
+  <!-- <div id="powerstatus"><p style="float: left">Status:&ensp;</p><p style="float: left" v-html="status"></p></div> -->
+  <div id="powerstatus"><p>Status: <span id="power">{{state}}</span></p></div>
+  <div id="taskstatus">
+    <p>Task ID: <span id="task_id">{{task.task_id}}</span></p>
+    <p>Current task: <span id="current_task"></span></p>
+  </div>
+  <div id="status_detail" style="display: none">
+    <p>Progress: <span id="progress"></span></p>
+  </div>
+  
+
+  <script>
+    function sleep(time){
+      return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    if($('#task_id')[0].innerHTML != 'no task running'){
+      $('#confirm_button').replaceWith(`<button id="confirm_button" onclick="kill_task()" style="
+      left: 35%;
+      position: relative;
+      width: 30%;
+      margin: 1rem 0 0.5rem 0;
+      height: 2rem;
+      ">stop running</button>`
+      )
+    }
+
+    function kill_task(){
+      $.get('/kill_task/'+$('#task_id')[0].innerHTML)
+    }
+
+
+    async function main(){
+      while($('#task_id')!='no task running'){
+        $.ajax({
+          type: 'GET',
+          dataType: 'json',
+          data: null,
+          url: '/power/status/',
+          success: function(data, status, request){
+              //console.log(request.responseJSON)
+              //console.log(data.state);
+              $('#power')[0].innerHTML = data.state
+          },
+          error: function(){
+              alert('ajax cannot get task status')
+          }
+        })
+
+        $.ajax({
+          type: 'GET',
+          dataType: 'json',
+          url: '/task_status/'+ $('#task_id')[0].innerHTML,
+          success: function(data, status, request){
+            var progress = $('#progress')[0]
+            var current_task = $('#current_task')[0]
+            current_task.innerHTML = data.current_task
+            if(data.state == 'PROGRESS'){
+              progress.innerHTML = data.cycle+'/'+data.total
+            }
+            //else if(data.state == 'REVOKED')
+              
+            else {
+              if(data.state == 'SUCCESS' || data.state == 'FAILURE' || data.state == 'REVOKED') {
+              $('#confirm_button').replaceWith(`<input id="confirm_button" type="submit" value="confirm"  style="
+              left: 35%;
+              position: relative;
+              width: 30%;
+              margin: 1rem 0 0.5rem 0;
+              height: 2rem;
+              ">`)
+              }
+            progress.innerHTML = data.state
+            }
+
+            if (data.state != 'PENDING')
+              $('#status_detail')[0].style = 'display: block'
+          },
+        })
+        await sleep(1000)
+        //console.log('refreshing')
+      }
+    }
+    main()
+      
+        
+
+  </script>
+
+</body>
+</html>

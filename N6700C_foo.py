@@ -1,0 +1,60 @@
+import pyvisa
+import time
+from celery import Celery
+from celery.result import AsyncResult
+from redis import Redis
+from app import app
+
+celery = Celery('tasks', broker=app.config['CELERY_BROKER_URL'], backend=app.config['RESULT_BACKEND'])
+
+address = 'TCPIP0::K-N6700C-13232.local::inst0::INSTR'#'USB0::0x2A8D::0x0002::MY56013232::0::INSTR'
+
+def check_and_plugin():
+    rm = pyvisa.ResourceManager()
+    if not rm.list_resources().__contains__(address):
+        raise Exception('未连接此设备(device not connected): N6700C')
+    else:
+        return rm.open_resource(address)
+
+def poweron():
+    pass
+    # inst = check_and_plugin()
+    #inst.write('output:state on,(@1)') 
+
+def poweroff():
+    pass
+    # inst = check_and_plugin()
+    # inst.write('output:state off,(@1)') 
+
+def querystates():
+    return True
+    # inst = check_and_plugin()
+    # state = inst.query('output:state? (@1)')
+    # if state == '1\n':
+        # return True
+    # else:
+        # return False
+    
+def queryerrors():
+    return False
+    # inst = check_and_plugin()
+    # errors = inst.query('*ESR?')
+    # if errors == '+0\n':
+        # return False
+    # else:
+        # return True
+
+@celery.task(bind=True)    
+def setPowercycle(self, cycle, voltage, uptime, downtime):
+    print('function setPowercycle is running')
+    for i in range(cycle):
+        self.update_state(state='PROGRESS',meta={'cycle': i, 'total': cycle})
+        time.sleep(uptime+downtime)
+
+    # inst = check_and_plugin()
+    # inst.write(':voltage '+str(voltage)+',(@1)' ) 
+    # for i in range(cycle):
+    #     inst.write('output:state on,(@1);') 
+    #     time.sleep(uptime)
+    #     inst.write('output:state off,(@1)') 
+    #     time.sleep(downtime)

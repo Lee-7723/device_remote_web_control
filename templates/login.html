@@ -1,0 +1,190 @@
+<head>
+	<meta charset="utf-8">
+	<title>Hardware Lab Remote Control</title>
+
+	<!--load google font-->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+	<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&amp;family=Josefin+Sans:wght@700&family=Nunito+Sans:ital,wght@1,300&amp;display=swap" rel="stylesheet" crossorigin="anonymous">
+	
+	<link href='http://cdn.repository.webfont.com/webfonts/nomal/147418/46758/61bb5785f629d8073835df4c.css' rel='stylesheet' type='text/css' crossorigin="anonymous" />
+    
+    <script src="https://cdn.staticfile.org/jquery/3.6.4/jquery.min.js"></script>
+
+<style>
+	body{
+		background-color: #819e01;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		margin: 0px;
+		display:flex;
+		justify-content: center;
+    	align-items: center;
+		flex-direction: column;
+	}
+
+	.login_box {
+		width: 50rem;
+		min-width: 50%;
+		height: 40%;
+		max-height: 25rem;
+		background-color: rgba(255, 255, 255, 0.3);
+		border-radius: 10px;
+		box-shadow: 3px 3px 8px rgb(0 0 0 / 50%);
+		padding: 5% 2%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+		border: 2px solid #ffffffaa;
+		position: absolute;
+	}
+	
+	.login_box > div {
+		display: flex;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+	}
+
+	#menu_header {
+		height: 100%; 
+		-webkit-filter: drop-shadow(2px 2px 3px rgb(0 0 0 / 50%)); 
+		filter: drop-shadow(2px 2px 3px rgb(0 0 0 / 50%));
+		display: flex; 
+		flex-direction: column; 
+		align-items: center; 
+		justify-content: center;
+	}
+
+	.right > form {
+		width: 90%;
+		height: 100%;
+		margin: 3%;
+		display: flex; 
+		flex-direction: column; 
+		align-items: center; 
+		/* justify-content: center; */
+		justify-content: space-evenly;
+	}
+
+	.input_box {
+		width: 90%;
+		height: 3rem;
+		font-size: 20px;
+		border-radius: 2rem;
+		margin: 6% 0;
+		background-color: #ffffffaa;
+		border: 2px solid #FFF;
+		/*box-shadow: 2px 2px 3px #000000aa;*/
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		transition: 120ms;
+	}
+
+	.input_box:focus-within {
+		border: 3px solid #FFF;
+		box-shadow: 2px 2px 4px #000000aa;
+		background-color: #ffffffdd;
+
+	}
+
+	.input_box input {
+		font-size: 1.2rem;
+		width: 90%;
+		height: 90%;
+		background-color: #FFFFFF00;
+		border: none;
+		font-family: consolas;
+	}
+
+	.input_box input:focus-visible {
+		outline: none;
+	}
+
+	.login_button {
+		width: 40%;
+		height: 3rem;
+		font-size: 1.5rem;
+		border-radius: 2rem;
+		margin: 6% 0;
+		background-color: #d2ff00;
+		/*border: 2px solid #FFF;*/
+		/*box-shadow: 2px 2px 3px #000000aa;*/
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		transition: 120ms;
+		color: #0006;
+		font-weight: 900;
+	}
+
+	.login_button > input {
+		height: 100%;
+		width: 100%;
+		font-size: 1.5rem;
+		background-color: #FFFFFF00;
+		color: #0006;
+		border: none;
+		cursor: pointer;
+		font-family: consolas;
+		font-weight: 900;
+	}
+
+	.login_button:hover {
+		background-color: #a7cc00;
+	}
+	.login_button:active {
+		background-color: #819e01;
+	}
+
+
+
+</style>
+
+</head>
+
+<body>
+    <div class="login_box">
+		<div class="left" style="width: 39%;">
+			<div id='menu_header'>
+				<img style="width: 40%; margin-bottom: 10%;" alt='top_left_logo' src='LN.svg'>
+				<p style="white-space: nowrap; 
+				font-size: 30px;
+				font-family: 'Nunito Sans', sans-serif; 
+				margin: 10px; 
+				color: #FFF; 
+				transform: skew(-3deg, 0deg);
+				">Hardware Lab<br>Remote Control</p>
+			</div>
+
+		</div>
+		<div class="bar" style="width: 2px; background-image: linear-gradient(
+			0deg
+			, #00000000, #ffffffaa, #00000000);">
+
+		</div>
+		<div class="right" style="width: 60%; font-family:'HelveticaNeue';">
+
+			<form action="" method="post" name="login_form">
+				<div class="input_box"><input title="account" name="account" type="text" placeholder="account" form="login_form" required></div>
+				<div class="input_box"><input title="password" name="password" type="password" placeholder="password" form="login_form" required></div>
+                <div>
+                    <div class="login_button">
+                        <svg class="icon" style="width: 1em;height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden; left: 3px; position: relative;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1391"><path d="M409.002667 469.333333L300.8 361.130667 361.130667 300.8l211.2 211.2-211.2 211.2-60.330667-60.330667L409.002667 554.666667H128v-85.333334h281.002667zM469.333333 128h341.333334c46.933333 0 85.333333 38.4 85.333333 85.333333v597.333334c0 46.933333-38.4 85.333333-85.333333 85.333333h-341.333334v-85.333333h341.333334V213.333333h-341.333334V128z" fill="currentColor" p-id="1392"></path></svg>
+                        <input type="submit" value="Register" onclick="login_form.action='/register/'">
+                    </div>
+                    <div class="login_button">
+                        <svg class="icon" style="width: 1em;height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden; left: 3px; position: relative;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1391"><path d="M409.002667 469.333333L300.8 361.130667 361.130667 300.8l211.2 211.2-211.2 211.2-60.330667-60.330667L409.002667 554.666667H128v-85.333334h281.002667zM469.333333 128h341.333334c46.933333 0 85.333333 38.4 85.333333 85.333333v597.333334c0 46.933333-38.4 85.333333-85.333333 85.333333h-341.333334v-85.333333h341.333334V213.333333h-341.333334V128z" fill="currentColor" p-id="1392"></path></svg>
+                        <input type="submit" value="Login" onclick="login_form.action='/login/'">
+                    </div>
+                </div>
+			</form>
+		</div>
+	</div>
+	<p style="bottom: 0; position: fixed; color: #FFFA">
+	</p>
+</body>
+

@@ -1,6 +1,11 @@
 import pyvisa
 import time
+from celery import Celery
+from celery.result import AsyncResult
+from redis import Redis
+from app import app
 
+celery = Celery('tasks', broker=app.config['CELERY_BROKER_URL'], backend=app.config['RESULT_BACKEND'])
 
 address = 'TCPIP0::K-N6700C-13232.local::inst0::INSTR'#'USB0::0x2A8D::0x0002::MY56013232::0::INSTR'
 
@@ -34,8 +39,9 @@ def queryerrors():
         return False
     else:
         return True
-    
-def setPowercycle(cycle, voltage, uptime, downtime):
+
+@celery.task(bind=True)    
+def setPowercycle(self, cycle, voltage, uptime, downtime):
     inst = check_and_plugin()
     inst.write(':voltage '+str(voltage)+',(@1)' ) 
     for i in range(cycle):
@@ -43,3 +49,4 @@ def setPowercycle(cycle, voltage, uptime, downtime):
         time.sleep(uptime)
         inst.write('output:state off,(@1)') 
         time.sleep(downtime)
+        self.update_state(state='PROGRESS',meta={'cycle': i, 'total': cycle})
