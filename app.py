@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, jsonify, Response, make_response, render_template
+from flask import Flask, request, redirect, jsonify, Response, make_response, render_template, session
 from celery import Celery
 from celery.result import AsyncResult
 import N6700C
@@ -7,11 +7,13 @@ import time
 import requests
 import json
 import sqlite3
+import os
 
 Redis(host='localhost', port=6379, db=0)
 con = sqlite3.connect('test.db', check_same_thread=False)
 cur = con.cursor()
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(24)
 
 # 配置消息代理的路径，如果是在远程服务器上，则配置远程服务器中redis的URL
 app.config['CELERY_BROKER_URL'] = 'redis://127.0.0.1:6379/0'
@@ -25,6 +27,12 @@ celery.conf.update(app.config)
 @app.route('/login/', methods=['POST', 'GET'])
 def login():
     if request.method == 'GET':
+        if 'username' in request.cookies:
+            session['username'] = request.cookies['username']
+            response = make_response('already logged in')
+            return response 
+        else:
+            pass
         return render_template('login/index.html')
     elif request.method == 'POST':
         username = request.form['username']
@@ -33,9 +41,13 @@ def login():
     if cur.fetchall():
         cur.execute('select * from user_info where username=? and password=?',(username, password))
         if cur.fetchall():
-            return 'login successful'
+            response = make_response('login successful')
+            response.set_cookie('username', username, max_age=7200)
+            session['username'] = username
+            return response
         else:
-            return 'wrong password'
+            response = make_response('wrong password')
+            return response
     else:
         return 'user not registered'
     
